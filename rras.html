@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Romantic Resource Allocation System™</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,500&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  
+  :root {
+    --pink-light: #FFF0F5;
+    --pink-mid: #FFD6E7;
+    --pink-hot: #E91E8C;
+    --pink-deep: #C2185B;
+    --pink-rose: #5D2A42;
+    --cream: #FFF8FA;
+    --white: #ffffff;
+    --text-muted: #9E6070;
+  }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: linear-gradient(160deg, #FFF0F5 0%, #FDE8F0 50%, #FFE4EC 100%);
+    min-height: 100vh;
+    color: var(--pink-rose);
+    padding-bottom: 4rem;
+  }
+
+  .hero {
+    text-align: center;
+    padding: 3rem 1rem 1.5rem;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--pink-hot);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    padding: 6px 16px;
+    border-radius: 50px;
+    margin-bottom: 1.5rem;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 6vw, 3.2rem);
+    font-weight: 700;
+    line-height: 1.15;
+    color: var(--pink-rose);
+  }
+
+  h1 em {
+    font-style: italic;
+    color: var(--pink-hot);
+  }
+
+  .subtitle {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-top: 0.5rem;
+  }
+
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    padding: 2rem 1rem 1rem;
+    flex-wrap: wrap;
+  }
+
+  .stat-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1.5rem 2.5rem;
+    text-align: center;
+    box-shadow: 0 2px 20px rgba(233,30,140,0.08);
+    min-width: 140px;
+  }
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--pink-hot);
+    line-height: 1;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-top: 6px;
+    text-transform: uppercase;
+  }
+
+  .progress-section {
+    max-width: 640px;
+    margin: 0 auto 1.5rem;
+    padding: 0 1rem;
+  }
+
+  .progress-card {
+    background: white;
+    border-radius: 20px;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 2px 20px rgba(233,30,140,0.08);
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--pink-rose);
+  }
+
+  .progress-pct {
+    color: var(--pink-hot);
+    font-weight: 700;
+  }
+
+  .progress-bar-bg {
+    background: #FFE4EC;
+    border-radius: 50px;
+    height: 10px;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-bar-fill {
+    background: linear-gradient(90deg, #F48FB1, #E91E8C);
+    border-radius: 50px;
+    height: 10px;
+    transition: width 0.6s ease;
+  }
+
+  .progress-ticks {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .lucky-btn {
+    display: block;
+    margin: 0 auto 2rem;
+    background: white;
+    border: 2px dashed #F48FB1;
+    color: var(--pink-hot);
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 28px;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .lucky-btn:hover {
+    background: var(--pink-hot);
+    color: white;
+    border-color: var(--pink-hot);
+    transform: scale(1.04);
+  }
+
+  .coupon-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  .coupon {
+    background: white;
+    border-radius: 18px;
+    overflow: visible;
+    box-shadow: 0 2px 16px rgba(233,30,140,0.07);
+    position: relative;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .coupon:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 28px rgba(233,30,140,0.15);
+  }
+
+  .coupon.redeemed {
+    opacity: 0.55;
+    background: #FFF5F8;
+  }
+
+  .coupon.redeemed .coupon-body {
+    position: relative;
+  }
+
+  .coupon.redeemed .coupon-body::after {
+    content: "REDEEMED";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-20deg);
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--pink-hot);
+    opacity: 0.35;
+    pointer-events: none;
+    white-space: nowrap;
+    border: 3px solid var(--pink-hot);
+    padding: 4px 14px;
+    border-radius: 4px;
+  }
+
+  .coupon-body {
+    padding: 1.2rem 1.2rem 0.75rem;
+  }
+
+  .coupon-emoji {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+
+  .coupon-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--pink-rose);
+    line-height: 1.3;
+    margin-bottom: 4px;
+  }
+
+  .coupon-id {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #CCAABB;
+    margin-bottom: 0;
+  }
+
+  .coupon-divider {
+    display: flex;
+    align-items: center;
+    margin: 0 -0px;
+    position: relative;
+    height: 20px;
+  }
+
+  .coupon-divider::before {
+    content: '';
+    flex: 1;
+    border-top: 2px dashed #FFD6E7;
+    margin: 0 16px;
+  }
+
+  .coupon-divider .notch {
+    width: 20px;
+    height: 20px;
+    background: #FFF0F5;
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .coupon-divider .notch-left { left: -10px; }
+  .coupon-divider .notch-right { right: -10px; }
+
+  .coupon-footer {
+    padding: 0.6rem 1.2rem 1rem;
+  }
+
+  .coupon-note {
+    font-size: 11px;
+    color: var(--pink-hot);
+    font-style: italic;
+    margin-bottom: 0.6rem;
+    min-height: 16px;
+  }
+
+  .redeem-btn {
+    width: 100%;
+    background: linear-gradient(135deg, #E91E8C, #C2185B);
+    color: white;
+    border: none;
+    border-radius: 50px;
+    padding: 9px 0;
+    font-family: 'Nunito', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .redeem-btn:hover {
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(233,30,140,0.35);
+  }
+
+  .redeem-btn:disabled {
+    background: #CCAABB;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(93,42,66,0.45);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-backdrop.open {
+    display: flex;
+  }
+
+  .modal {
+    background: white;
+    border-radius: 24px;
+    padding: 2.5rem 2rem;
+    max-width: 360px;
+    width: 90%;
+    text-align: center;
+    animation: popIn 0.3s ease;
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .modal-emoji { font-size: 3rem; margin-bottom: 0.75rem; }
+  .modal h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    color: var(--pink-rose);
+    margin-bottom: 0.5rem;
+  }
+  .modal p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+  }
+
+  .modal-btns { display: flex; gap: 10px; }
+  .modal-btns button {
+    flex: 1;
+    padding: 11px 0;
+    border-radius: 50px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-cancel {
+    background: white;
+    border: 2px solid #FFD6E7;
+    color: var(--text-muted);
+  }
+
+  .btn-confirm {
+    background: linear-gradient(135deg, #E91E8C, #C2185B);
+    border: none;
+    color: white;
+  }
+
+  .btn-confirm:hover { transform: scale(1.03); }
+
+  .confetti-wrap {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 200;
+  }
+
+  .heart {
+    position: absolute;
+    font-size: 1.5rem;
+    animation: floatUp 1.4s ease-out forwards;
+  }
+
+  @keyframes floatUp {
+    0%   { opacity: 1; transform: translateY(0) scale(1) rotate(0deg); }
+    100% { opacity: 0; transform: translateY(-260px) scale(1.4) rotate(30deg); }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="badge">💖 EST. WITH LOVE</div>
+  <h1>Romantic <em>Resource</em><br>Allocation System™</h1>
+  <p class="subtitle">Enterprise-grade affection infrastructure.</p>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-num" id="remaining">24</div>
+    <div class="stat-label">Remaining Assets</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-num" id="redeemed-count">0</div>
+    <div class="stat-label">Redeemed Resources</div>
+  </div>
+</div>
+
+<div class="progress-section">
+  <div class="progress-card">
+    <div class="progress-header">
+      <span>💝 Satisfaction Progress</span>
+      <span class="progress-pct" id="pct">0%</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="bar" style="width:0%"></div>
+    </div>
+    <div class="progress-ticks">
+      <span>0</span><span>6</span><span>12 ✨</span><span>18</span><span>24 🏆</span>
+    </div>
+  </div>
+</div>
+
+<button class="lucky-btn" onclick="feelingLucky()">🎲 I'm Feeling Lucky</button>
+
+<div class="coupon-grid" id="coupon-grid"></div>
+
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <div class="modal-emoji" id="modal-emoji">💋</div>
+    <h2 id="modal-title">Redeem coupon?</h2>
+    <p id="modal-desc">Are you sure you want to redeem this coupon? This action is final and non-reversible.</p>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeModal()">Not yet</button>
+      <button class="btn-confirm" onclick="confirmRedeem()">Redeem! 💖</button>
+    </div>
+  </div>
+</div>
+
+<div class="confetti-wrap" id="confetti"></div>
+
+<script>
+const COUPONS = [
+  { id:"RRAS-001", emoji:"💋", title:"20 Kisses Coupon", note:"Emotional damages not covered under warranty." },
+  { id:"RRAS-002", emoji:"📵", title:"No Reels, Only You Tonight", note:"For certified boyfriend use only." },
+  { id:"RRAS-003", emoji:"🤗", title:"10-Minute Hug Session", note:"Redeemable subject to girlfriend availability." },
+  { id:"RRAS-004", emoji:"🥱", title:"Cuddle & Nap Together Pass", note:"Redeemable subject to girlfriend availability." },
+  { id:"RRAS-005", emoji:"💆", title:"Premium Full Body Massage", note:"Unauthorized duplication strictly prohibited." },
+  { id:"RRAS-006", emoji:"💆", title:"Head Massage + Hair Oil Champi", note:"Use before management gets sleepy." },
+  { id:"RRAS-007", emoji:"🔥", title:"One Spicy Picture (No Questions Asked)", note:"Valid under RRAS affection compliance standards." },
+  { id:"RRAS-008", emoji:"🧴", title:"Face Massage & Skincare Night", note:"High-priority romantic infrastructure enabled." },
+  { id:"RRAS-009", emoji:"🍽️", title:"I'll Cook Your Favorite Meal", note:"High-priority romantic infrastructure enabled." },
+  { id:"RRAS-010", emoji:"🗺️", title:"One Mini Adventure Together", note:"Use responsibly. Excessive smugness prohibited." },
+  { id:"RRAS-011", emoji:"⚠️", title:'One "Yes Hour"', note:"Non-transferable romantic asset." },
+  { id:"RRAS-012", emoji:"💝", title:"I Plan the Entire Date Day", note:"Redeemable subject to girlfriend availability." },
+  { id:"RRAS-013", emoji:"💕", title:"Cute Video Call Coupon", note:"Bandwidth of love not guaranteed." },
+  { id:"RRAS-014", emoji:"👑", title:"Dedicated Princess Day", note:"Subject to princess schedule approval." },
+  { id:"RRAS-015", emoji:"🎧", title:"Mandatory Media Consumption Directive", note:"Watch what she wants, no complaints." },
+  { id:"RRAS-016", emoji:"🌙", title:"Midnight Snack Run", note:"GPS tracking of love enabled." },
+  { id:"RRAS-017", emoji:"💌", title:"Handwritten Love Letter", note:"Ink not included but feelings are." },
+  { id:"RRAS-018", emoji:"🛁", title:"Relaxation Night — Full Setup", note:"Candles, music, the whole thing." },
+  { id:"RRAS-019", emoji:"📸", title:"Cute Couple Photoshoot", note:"Smile. You're legally obligated." },
+  { id:"RRAS-020", emoji:"🎁", title:"Surprise Gift of Your Choice", note:"Budget may vary. Love will not." },
+  { id:"RRAS-021", emoji:"🕹️", title:"Beat a Game She Picks", note:"Complaints strictly unauthorized." },
+  { id:"RRAS-022", emoji:"☕", title:"Breakfast in Bed", note:"Service charge waived for love." },
+  { id:"RRAS-023", emoji:"🌸", title:"Flower Surprise Delivery", note:"Bouquet subject to availability." },
+  { id:"RRAS-024", emoji:"⭐", title:"Whatever You Want Day", note:"Terms and conditions: you're the condition." },
+];
+
+const TOTAL = COUPONS.length;
+let redeemed = JSON.parse(localStorage.getItem('rras_redeemed') || '[]');
+let pendingId = null;
+
+function save() {
+  localStorage.setItem('rras_redeemed', JSON.stringify(redeemed));
+}
+
+function updateStats() {
+  const r = redeemed.length;
+  const rem = TOTAL - r;
+  document.getElementById('remaining').textContent = rem;
+  document.getElementById('redeemed-count').textContent = r;
+  const pct = Math.round((r / TOTAL) * 100);
+  document.getElementById('pct').textContent = pct + '%';
+  document.getElementById('bar').style.width = pct + '%';
+}
+
+function renderGrid() {
+  const grid = document.getElementById('coupon-grid');
+  grid.innerHTML = '';
+  COUPONS.forEach(c => {
+    const isR = redeemed.includes(c.id);
+    const div = document.createElement('div');
+    div.className = 'coupon' + (isR ? ' redeemed' : '');
+    div.innerHTML = `
+      <div class="coupon-body">
+        <span class="coupon-emoji">${c.emoji}</span>
+        <div class="coupon-title">${c.title}</div>
+        <div class="coupon-id">${c.id}</div>
+      </div>
+      <div class="coupon-divider">
+        <div class="notch notch-left"></div>
+        <div class="notch notch-right"></div>
+      </div>
+      <div class="coupon-footer">
+        <div class="coupon-note">${c.note}</div>
+        <button class="redeem-btn" onclick="openModal('${c.id}')" ${isR ? 'disabled' : ''}>
+          ${isR ? '✓ Redeemed' : '💖 Redeem Now'}
+        </button>
+      </div>
+    `;
+    grid.appendChild(div);
+  });
+}
+
+function openModal(id) {
+  pendingId = id;
+  const c = COUPONS.find(x => x.id === id);
+  document.getElementById('modal-emoji').textContent = c.emoji;
+  document.getElementById('modal-title').textContent = c.title;
+  document.getElementById('modal-desc').textContent = `Redeeming "${c.title}". Once used, this coupon cannot be returned. Are you absolutely sure?`;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  pendingId = null;
+}
+
+function confirmRedeem() {
+  if (!pendingId) return;
+  redeemed.push(pendingId);
+  save();
+  closeModal();
+  updateStats();
+  renderGrid();
+  shootHearts();
+}
+
+function feelingLucky() {
+  const available = COUPONS.filter(c => !redeemed.includes(c.id));
+  if (available.length === 0) return;
+  const pick = available[Math.floor(Math.random() * available.length)];
+  openModal(pick.id);
+}
+
+function shootHearts() {
+  const wrap = document.getElementById('confetti');
+  wrap.innerHTML = '';
+  const emojis = ['💖','💕','💗','💓','❤️','🌸','✨'];
+  for (let i = 0; i < 14; i++) {
+    const h = document.createElement('div');
+    h.className = 'heart';
+    h.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    h.style.left = (10 + Math.random() * 80) + 'vw';
+    h.style.bottom = '0px';
+    h.style.animationDelay = (Math.random() * 0.5) + 's';
+    h.style.fontSize = (1 + Math.random()) + 'rem';
+    wrap.appendChild(h);
+    setTimeout(() => h.remove(), 2000);
+  }
+}
+
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
+
+updateStats();
+renderGrid();
+</script>
+</body>
+</html>
